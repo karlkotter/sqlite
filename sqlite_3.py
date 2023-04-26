@@ -44,7 +44,39 @@ def alla2000autod():
     yhendus.commit()
 
 def keskmineAutoAastaHind():
-    print("tere")
+    
+    cursor.execute("SELECT AVG(car_price) FROM kkotter;")
+    vastus = cursor.fetchone()[0]
+    print("Auto keskmine hind on:", vastus)
+    cursor.execute("SELECT MAX(car_price) FROM kkotter;")
+    vastus = cursor.fetchone()[0]
+    print("Kõige kõrgem hind:", vastus)
+
+def uusimatAutot():
+
+    cursor.execute("SELECT car_make, car_model FROM kkotter ORDER BY car_year DESC LIMIT 5;")
+    results = cursor.fetchall()
+    print("Uusimad autod on:")
+    for result in results:
+        print(result[0], result[1])
+
+def kallimAutoPerenimi():
+    # prompt the user to enter input parameters
+    automark = input("Sisestage automark mida saavite kuvada: ")
+    pnimi = input("Sisestage omaniku perekonnanimi: ")
+    
+    # establish a connection to the database
+    conn = sqlite3.connect("antmebas.db")
+    cursor = conn.cursor()
+    
+    # execute the SQL query to get the 5 most expensive cars of the selected make owned by the specified owner's last name
+    cursor.execute("SELECT car_make, car_model FROM kkotter WHERE car_make=? AND owner_last_name=? ORDER BY price DESC LIMIT 5", (automark, pnimi))
+    vastus = cursor.fetchall()
+    
+    # print the results
+    print(f"The 5 most expensive {automark} cars owned by {pnimi} are:")
+    for result in vastus:
+        print(result[0], result[1])
 
 
 if valik == 1:
@@ -55,6 +87,13 @@ elif valik == 2:
 
 elif valik == 3:
     keskmineAutoAastaHind()
+
+elif valik == 4:
+    uusimatAutot()
+
+elif valik == 5:
+    kallimAutoPerenimi()
+
 
 
 
