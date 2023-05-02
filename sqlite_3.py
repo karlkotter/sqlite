@@ -1,5 +1,5 @@
 import sqlite3
-
+import csv
 yhendus = sqlite3.connect('c:/sqlite/antmebas.db')
 cursor = yhendus.cursor()
 
@@ -61,22 +61,36 @@ def uusimatAutot():
         print(result[0], result[1])
 
 def kallimAutoPerenimi():
-    # prompt the user to enter input parameters
-    automark = input("Sisestage automark mida saavite kuvada: ")
-    pnimi = input("Sisestage omaniku perekonnanimi: ")
-    
-    # establish a connection to the database
-    conn = sqlite3.connect("antmebas.db")
-    cursor = conn.cursor()
-    
-    # execute the SQL query to get the 5 most expensive cars of the selected make owned by the specified owner's last name
-    cursor.execute("SELECT car_make, car_model FROM kkotter WHERE car_make=? AND owner_last_name=? ORDER BY price DESC LIMIT 5", (automark, pnimi))
-    vastus = cursor.fetchall()
-    
-    # print the results
-    print(f"The 5 most expensive {automark} cars owned by {pnimi} are:")
-    for result in vastus:
-        print(result[0], result[1])
+    automark = input("Sisestage automark Toyota, Citroen, Audi, etc: ")
+    perenimi = "kotter"
+    cursor.execute("SELECT * FROM kkotter WHERE car_make = ? ORDER BY hind DESC, ASC LIMIT 5", (automark,))
+
+    cursor.execute("SELECT car_make, car_price FROM kkotter WHERE ... ORDER BY car_year DESC LIMIT 5;")
+
+def reaKustutamine():
+
+    id = int(input("Sisestage ID nr, mida soovite andmebaasist kustutada: "))
+    cursor.execute("DELETE FROM kkotter WHERE id = ?", (id,))
+    print("ID", id, "on kustutatud")
+
+def reaKustutamineAgaRaskem():
+    car_year = int(input("Sisestage aasta PEAB JAAMA ALLA 2000 vist: "))
+    car_mark = input("Sisesta automark: ")
+    cursor.execute("DELETE FROM kkotter WHERE car_year < ? AND car_make = ?", (car_year, car_mark))
+    print("Kõik read, mille aasta on alla", car_year, "ja mark on", car_mark, "on edukalt kustutatud")
+
+def ekspordiAndmed():
+
+    cursor.execute("SELECT * FROM kkotter")
+    andmed = cursor.fetchall()
+    with open('andmed.csv', mode='w', newline='') as csv_fail:
+        kirjutaja = csv.writer(csv_fail, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        kirjutaja.writerow([i[0] for i in cursor.description])
+        for rida in andmed:
+            kirjutaja.writerow(rida)
+
+    print("Andmed on edukalt eksporditud CSV faili")
+
 
 
 if valik == 1:
@@ -94,7 +108,14 @@ elif valik == 4:
 elif valik == 5:
     kallimAutoPerenimi()
 
+elif valik == 6:
+    reaKustutamine()
 
+elif valik == 7:
+    reaKustutamineAgaRaskem()
+
+elif valik == 8:
+    ekspordiAndmed()
 
 
 
