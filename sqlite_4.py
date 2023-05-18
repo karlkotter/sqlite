@@ -52,7 +52,7 @@ def kustuta_rida():
 
 def muuda_teemavarvi():
     if style.theme_use() == 'vapor':
-        style.theme_use('litera')
+        style.theme_use('minty')
     else:
         style.theme_use('vapor')
 
